@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addJs">
+                <script>tlaziuk/lazyload/lazyload.js</script>
+            </action>
+            <action method="addJs">
+                <script>tlaziuk/lazyload/index.js</script>
+            </action>
+        </reference>
+    </default>
+</layout>

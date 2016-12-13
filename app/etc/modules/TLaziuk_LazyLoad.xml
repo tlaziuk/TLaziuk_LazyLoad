@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <TLaziuk_LazyLoad>
+            <active>true</active>
+            <codePool>local</codePool>
+        </TLaziuk_LazyLoad>
+    </modules>
+</config>

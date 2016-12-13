@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <advanced>
+            <groups>
+                <tlaziuk_lazyload translate="label" module="tlaziuk_lazyload">
+                    <label>Lazy Load</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>0</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label" module="tlaziuk_lazyload">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>0</sort_order>
+                        </enabled>
+                        <all translate="label comment" module="tlaziuk_lazyload">
+                            <label>All</label>
+                            <comment>Try to lazy-load everything.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>10</sort_order>
+                        </all>
+                        <module translate="label" module="tlaziuk_lazyload">
+                            <label>Modules</label>
+                            <comment>Lazy-load only selected modules output.</comment>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>tlaziuk_lazyload/system_config_source_module</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <all>0</all>
+                            </depends>
+                            <sort_order>20</sort_order>
+                        </module>
+                    </fields>
+                </tlaziuk_lazyload>
+            </groups>
+        </advanced>
+    </sections>
+</config>
