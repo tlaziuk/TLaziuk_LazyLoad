@@ -104,7 +104,7 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
         return $html;
     }
 
-    protected $_commentPattern = '|(<!--.*?-->)([\s\S]*?)\1|i';
+    protected $_commentPattern = '|<!--(.*?)-->([\s\S]*?)<!--\1-->|i';
     protected $_tmpHtml = array();
 
     public function lazyBlock(Mage_Core_Block_Abstract $block, Varien_Object $transport) {
@@ -112,12 +112,12 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
             $name = $block->getModuleName() . '::' . get_class($block) . '::' . ($block->getNameInLayout() ? $block->getNameInLayout() : 'anonymous');
             Varien_Profiler::start('TLaziuk_LazyLoad::lazyBlock::' . $name);
             $key = self::CACHE_KEY_PREFIX . '::' . $name;
-            if (!($html = $this->loadCache($key))) {
+            if (!$block->getCacheLifetime() || !($html = $this->loadCache($key))) {
                 $html = $transport->getHtml();
                 $html = preg_replace_callback($this->_commentPattern, function($matches) {
                     if (!empty($matches[2])) {
                         $this->_tmpHtml[$matches[1]] = $matches[2];
-                        return $matches[1] . $matches[1];
+                        return '<!--' . $matches[1] . '-->' . '<!--' . $matches[1] . '-->';
                     }
                     return '';
                 }, $html);
@@ -125,14 +125,14 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
                     $html = $this->lazyHtml($html);
                 }
                 $html = preg_replace_callback($this->_commentPattern, function($matches) {
-                    if (empty($matches[2]) && !empty($this->_tmpHtml[$matches[1]])) {
+                    if (!empty($this->_tmpHtml[$matches[1]])) {
                         return $this->_tmpHtml[$matches[1]];
                     }
                     return $matches[2];
                 }, $html);
                 $this->saveCache($html, $key);
             } else {
-                $this->_tmpHtml["<!--{$name}-->"] = $html;
+                $this->_tmpHtml[$name] = $html;
             }
             if ($block->getParentBlock()) {
                 $html = "<!--{$name}-->{$html}<!--{$name}-->";
@@ -150,11 +150,7 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($response->getBody(true) as $name => $html) {
             Varien_Profiler::start('TLaziuk_LazyLoad::lazyResponse::'.$name);
             try {
-                $key = self::CACHE_KEY_PREFIX . '::' . 'response' . '::' . $name;
-                if (!($lazy = $this->loadCache($key))) {
-                    $lazy = $this->lazyHtml($html);
-                    $this->saveCache($lazy, $key);
-                }
+                $lazy = $this->lazyHtml($html);
                 $response->setBody($lazy, $name);
             } catch (Exception $e) {
                 Mage::logException($e);
