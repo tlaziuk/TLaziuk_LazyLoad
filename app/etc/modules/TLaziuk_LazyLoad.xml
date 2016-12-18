@@ -4,6 +4,9 @@
         <TLaziuk_LazyLoad>
             <active>true</active>
             <codePool>local</codePool>
+            <depends>
+                <Mage_Core />
+            </depends>
         </TLaziuk_LazyLoad>
     </modules>
 </config>
