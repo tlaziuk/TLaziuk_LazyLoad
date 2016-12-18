@@ -85,15 +85,37 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
         return $html;
     }
 
+    protected $_commentPattern = '|(<!--.*?-->)([\s\S]*?)\1|i';
+    protected $_tmpHtml = array();
+
     public function lazyBlock(Mage_Core_Block_Abstract $block, Varien_Object $transport) {
-        if (in_array($block->getModuleName(), $this->getModule())) {
-            Varien_Profiler::start('TLaziuk_LazyLoad::lazyBlock::'.$block->getModuleName());
-            try {
-                $transport->setHtml($this->lazyHtml($transport->getHtml()));
-            } catch (Exception $e) {
-                Mage::logException($e);
+        try {
+            $name = $block->getModuleName() . '::' . get_class($block) . '::' . ($block->getNameInLayout() ? $block->getNameInLayout() : 'anonymous') . '::' . spl_object_hash($block);
+            Varien_Profiler::start('TLaziuk_LazyLoad::lazyBlock::' . $name);
+            $html = $transport->getHtml();
+            $html = preg_replace_callback($this->_commentPattern, function($matches) {
+                if (!empty($matches[2])) {
+                    $this->_tmpHtml[$matches[1]] = $matches[2];
+                    return $matches[1] . $matches[1];
+                }
+                return '';
+            }, $html);
+            if (in_array($block->getModuleName(), $this->getModule())) {
+                $html = $this->lazyHtml($html);
             }
-            Varien_Profiler::stop('TLaziuk_LazyLoad::lazyBlock::'.$block->getModuleName());
+            $html = preg_replace_callback($this->_commentPattern, function($matches) {
+                if (empty($matches[2]) && !empty($this->_tmpHtml[$matches[1]])) {
+                    return $this->_tmpHtml[$matches[1]];
+                }
+                return $matches[2];
+            }, $html);
+            if ($block->getParentBlock()) {
+                $html = "<!--{$name}-->{$html}<!--{$name}-->";
+            }
+            $transport->setHtml($html);
+            Varien_Profiler::stop('TLaziuk_LazyLoad::lazyBlock::' . $name);
+        } catch (Exception $e) {
+            Mage::logException($e);
         }
         return $block;
     }
