@@ -38,7 +38,7 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getPlaceholder() {
         if (empty($this->_placeholder)) {
-            $this->setPlaceholder(Mage::getSingleton('catalog/product_media_config')->getBaseMediaUrl() . '/placeholder/' . Mage::getStoreConfig("catalog/placeholder/small_image_placeholder"));
+            $this->setPlaceholder(Mage::getSingleton('catalog/product_media_config')->getBaseMediaUrl() . '/placeholder/' . Mage::getStoreConfig("catalog/placeholder/image_placeholder"));
         }
         return $this->_placeholder;
     }
@@ -68,7 +68,7 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
         if (empty($this->_callback)) {
             $this->setCallback(function ($matches) {
                 if (strpos($matches[0], $this->getAttribute()) === false) {
-                    return "<img{$matches[1]} {$this->getAttribute()}={$matches[2]}{$matches[3]}{$matches[2]} src={$matches[2]}{$this->getPlaceholder()}{$matches[2]} {$matches[4]}>";
+                    return "<img{$matches[1]}{$this->getAttribute()}={$matches[2]}{$matches[3]}{$matches[2]} src={$matches[2]}{$this->getPlaceholder()}{$matches[2]}{$matches[4]}>";
                 }
                 return $matches[0];
             });
@@ -93,10 +93,26 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
         return explode(',', Mage::getStoreConfig(self::XML_PATH_MODULE));
     }
 
-    public function lazyHtml($html) {
+    public function lazyHtml($html, $skipScript = true) {
         Varien_Profiler::start('TLaziuk_LazyLoad::lazyHtml');
         try {
+            $tmp = array();
+            if ($skipScript) {
+                $html = preg_replace_callback('|<(script)([^>]*?)>([\S\s]+?)<\/\1>|i', function ($matches) use (&$tmp) {
+                    $hash = md5($matches[3]);
+                    $tmp[$hash] = $matches[0];
+                    return "<!--script:{$hash}-->";
+                }, $html);
+            }
             $html = preg_replace_callback($this->getPattern(), $this->getCallback(), $html);
+            if ($skipScript) {
+                $html = preg_replace_callback('|<!--script:(.*?)-->|i', function ($matches) use (&$tmp) {
+                    if (isset($tmp[$matches[1]])) {
+                        return $tmp[$matches[1]];
+                    }
+                    return $matches[0];
+                }, $html);
+            }
         } catch (Exception $e) {
             Mage::logException($e);
         }
