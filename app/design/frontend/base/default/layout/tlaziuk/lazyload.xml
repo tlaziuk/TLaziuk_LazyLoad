@@ -2,10 +2,10 @@
 <layout>
     <default>
         <reference name="head">
-            <action method="addJs">
+            <action method="addJs" ifconfig="advanced/tlaziuk_lazyload/enabled">
                 <script>tlaziuk/lazyload/lazyload.js</script>
             </action>
-            <action method="addJs">
+            <action method="addJs" ifconfig="advanced/tlaziuk_lazyload/enabled">
                 <script>tlaziuk/lazyload/index.js</script>
             </action>
         </reference>

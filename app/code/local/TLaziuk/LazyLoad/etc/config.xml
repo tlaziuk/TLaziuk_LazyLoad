@@ -2,7 +2,7 @@
 <config>
     <modules>
         <TLaziuk_LazyLoad>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
         </TLaziuk_LazyLoad>
     </modules>
     <global>
@@ -49,7 +49,12 @@
     <default>
         <advanced>
             <tlaziuk_lazyload>
-                <attribute>data-original</attribute>
+                <attribute>
+<![CDATA[data-original]]>
+                </attribute>
+                <placeholder>
+<![CDATA[https://placeholdit.imgix.net/~text?w=32&h=32]]>
+                </placeholder>
             </tlaziuk_lazyload>
         </advanced>
     </default>

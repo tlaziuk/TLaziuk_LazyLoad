@@ -1,15 +1,16 @@
 <?php
 class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    const XML_PATH_ENABLED = 'advanced/tlaziuk_lazyload/enabled';
-    const XML_PATH_MODULE = 'advanced/tlaziuk_lazyload/module';
     const XML_PATH_ALL = 'advanced/tlaziuk_lazyload/all';
     const XML_PATH_ATTRIBUTE = 'advanced/tlaziuk_lazyload/attribute';
+    const XML_PATH_ENABLED = 'advanced/tlaziuk_lazyload/enabled';
+    const XML_PATH_MODULE = 'advanced/tlaziuk_lazyload/module';
+    const XML_PATH_PLACEHOLDER= 'advanced/tlaziuk_lazyload/placeholder';
 
-    const CACHE_TAG = 'TLaziuk_LazyLoad';
     const CACHE_GROUP = Mage_Core_Block_Abstract::CACHE_GROUP;
-    const CACHE_LIFETIME = Mage_Core_Model_Cache::DEFAULT_LIFETIME;
     const CACHE_KEY_PREFIX = self::CACHE_TAG;
+    const CACHE_LIFETIME = Mage_Core_Model_Cache::DEFAULT_LIFETIME;
+    const CACHE_TAG = 'TLaziuk_LazyLoad';
 
     public function loadCache($key) {
         if (Mage::app()->useCache(self::CACHE_GROUP)) {
@@ -38,7 +39,7 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getPlaceholder() {
         if (empty($this->_placeholder)) {
-            $this->setPlaceholder(Mage::getSingleton('catalog/product_media_config')->getBaseMediaUrl() . '/placeholder/' . Mage::getStoreConfig("catalog/placeholder/image_placeholder"));
+            $this->setPlaceholder(Mage::getStoreConfig(self::XML_PATH_PLACEHOLDER));
         }
         return $this->_placeholder;
     }

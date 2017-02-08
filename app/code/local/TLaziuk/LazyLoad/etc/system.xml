@@ -21,6 +21,15 @@
                             <show_in_store>1</show_in_store>
                             <sort_order>0</sort_order>
                         </enabled>
+                        <placeholder translate="label comment" module="tlaziuk_lazyload">
+                            <label>Placeholder</label>
+                            <comment>Provide a URL to image which should be used as placeholder.</comment>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>10</sort_order>
+                        </placeholder>
                         <all translate="label comment" module="tlaziuk_lazyload">
                             <label>All</label>
                             <comment>Try to lazy-load everything.</comment>
@@ -29,9 +38,9 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <sort_order>10</sort_order>
+                            <sort_order>100</sort_order>
                         </all>
-                        <module translate="label" module="tlaziuk_lazyload">
+                        <module translate="label comment" module="tlaziuk_lazyload">
                             <label>Modules</label>
                             <comment>Lazy-load only selected modules output.</comment>
                             <frontend_type>multiselect</frontend_type>
@@ -42,7 +51,7 @@
                             <depends>
                                 <all>0</all>
                             </depends>
-                            <sort_order>20</sort_order>
+                            <sort_order>200</sort_order>
                         </module>
                     </fields>
                 </tlaziuk_lazyload>

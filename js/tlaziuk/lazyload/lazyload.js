@@ -9,11 +9,7 @@
 }(this, function() {
 
     var _defaultSettings,
-        _supportsAddEventListener,
-        _supportsAttachEvent,
-        _supportsClassList,
         _isInitialized = false;
-
 
     /*
      * PRIVATE FUNCTIONS *NOT RELATED* TO A SPECIFIC INSTANCE OF LAZY LOAD
@@ -26,7 +22,7 @@
                 elements_selector: "img",
                 container: window,
                 threshold: 300,
-                throttle: 50,
+                throttle: 150,
                 data_src: "original",
                 data_srcset: "original-set",
                 class_loading: "loading",
@@ -37,41 +33,8 @@
                 callback_set: null,
                 callback_processed: null
             };
-            _supportsAddEventListener = !!window.addEventListener;
-            _supportsAttachEvent = !!window.attachEvent;
-            _supportsClassList = !!document.body.classList;
 
             _isInitialized = true;
-        }
-    }
-
-    function _addEventListener(element, eventName, callback) {
-        // Use addEventListener if available
-        if (_supportsAddEventListener) {
-            element.addEventListener(eventName, callback);
-            return;
-        }
-        // Otherwise use attachEvent, set this and event
-        if (_supportsAttachEvent) {
-            element.attachEvent('on' + eventName, (function(el) {
-                return function() {
-                    callback.call(el, window.event);
-                };
-            }(element)));
-            // Break closure and primary circular reference to element
-            element = null;
-        }
-    }
-
-    function _removeEventListener(element, eventName, callback) {
-        // Use removeEventListener if available
-        if (_supportsAddEventListener) {
-            element.removeEventListener(eventName, callback);
-            return;
-        }
-        // Otherwise use detachEvent
-        if (_supportsAttachEvent) {
-            element.detachEvent('on' + eventName, callback);
         }
     }
 
@@ -164,37 +127,7 @@
     }
 
     function _convertToArray(nodeSet) {
-        try {
-            return Array.prototype.slice.call(nodeSet);
-        } catch (e) {
-            var array = [],
-                i, l = nodeSet.length;
-
-            for (i = 0; i < l; i++) {
-                array.push(nodeSet[i]);
-            }
-            return array;
-        }
-    }
-
-    function _addClass(element, className) {
-        /* HTML 5 compliant browsers. */
-        if (_supportsClassList) {
-            element.classList.add(className);
-            return;
-        }
-        /* Legacy browsers (IE<10) support. */
-        element.className += (element.className ? ' ' : '') + className;
-    }
-
-    function _removeClass(element, className) {
-        /* HTML 5 compliant browsers. */
-        if (_supportsClassList) {
-            element.classList.remove(className);
-            return;
-        }
-        /* Legacy browsers (IE<10) support. */
-        element.className = element.className.replace(new RegExp("(^|\\s+)" + className + "(\\s+|$)"), ' ').replace(/^\s+/, '').replace(/\s+$/, '');
+        return Array.prototype.slice.call(nodeSet);
     }
 
     function _setSourcesForPicture(element, srcsetDataAttribute) {
@@ -253,7 +186,7 @@
 
         this._handleScrollFn = _bind(this.handleScroll, this);
 
-        _addEventListener(window, "resize", this._handleScrollFn);
+        window.addEventListener("resize", this._handleScrollFn);
         this.update();
     }
 
@@ -266,6 +199,14 @@
     LazyLoad.prototype._showOnAppear = function(element) {
         var settings = this._settings;
 
+        function errorCallback() {
+            element.removeEventListener("load", loadCallback);
+            element.classList.remove(settings.class_loading);
+            if (settings.callback_error) {
+                settings.callback_error(element);
+            }
+        }
+
         function loadCallback() {
             /* As this method is asynchronous, it must be protected against external destroy() calls */
             if (settings === null) {
@@ -275,21 +216,16 @@
             if (settings.callback_load) {
                 settings.callback_load(element);
             }
-            _removeClass(element, settings.class_loading);
-            _addClass(element, settings.class_loaded);
-            _removeEventListener(element, "load", loadCallback);
+            element.classList.remove(settings.class_loading);
+            element.classList.add(settings.class_loaded);
+            element.removeEventListener("load", loadCallback);
+            element.removeEventListener("error", errorCallback);
         }
 
         if (element.tagName === "IMG" || element.tagName === "IFRAME") {
-            _addEventListener(element, "load", loadCallback);
-            _addEventListener(element, "error", function () {
-                _removeEventListener(element, "load", loadCallback);
-                _removeClass(element, settings.class_loading);
-                if (settings.callback_error) {
-                    settings.callback_error(element);
-                }
-            });
-            _addClass(element, settings.class_loading);
+            element.addEventListener("load", loadCallback);
+            element.addEventListener("error", errorCallback);
+            element.classList.add(settings.class_loading);
         }
 
         _setSources(element, settings.data_srcset, settings.data_src);
@@ -356,14 +292,14 @@
     LazyLoad.prototype._startScrollHandler = function() {
         if (!this._isHandlingScroll) {
             this._isHandlingScroll = true;
-            _addEventListener(this._settings.container, "scroll", this._handleScrollFn);
+            this._settings.container.addEventListener("scroll", this._handleScrollFn);
         }
     };
 
     LazyLoad.prototype._stopScrollHandler = function() {
         if (this._isHandlingScroll) {
             this._isHandlingScroll = false;
-            _removeEventListener(this._settings.container, "scroll", this._handleScrollFn);
+            this._settings.container.removeEventListener("scroll", this._handleScrollFn);
         }
     };
 
@@ -415,7 +351,7 @@
     };
 
     LazyLoad.prototype.destroy = function() {
-        _removeEventListener(window, "resize", this._handleScrollFn);
+        window.removeEventListener("resize", this._handleScrollFn);
         if (this._loopTimeout) {
             clearTimeout(this._loopTimeout);
             this._loopTimeout = null;
@@ -431,4 +367,3 @@
 
 
 }));
-

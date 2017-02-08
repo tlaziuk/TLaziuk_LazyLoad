@@ -1,7 +1,6 @@
 <?php
 class TLaziuk_LazyLoad_Model_System_Config_Source_Module
 {
-
     protected $_options = array();
 
     public function toOptionArray()
