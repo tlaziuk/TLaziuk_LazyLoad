@@ -2,10 +2,15 @@
 <config>
     <modules>
         <TLaziuk_LazyLoad>
-            <version>1.4.0</version>
+            <version>2.0.0</version>
         </TLaziuk_LazyLoad>
     </modules>
     <global>
+        <blocks>
+            <tlaziuk_lazyload>
+                <class>TLaziuk_LazyLoad_Block</class>
+            </tlaziuk_lazyload>
+        </blocks>
         <helpers>
             <tlaziuk_lazyload>
                 <class>TLaziuk_LazyLoad_Helper</class>
@@ -55,6 +60,9 @@
                 <placeholder>
 <![CDATA[https://placeholdit.imgix.net/~text?w=32&h=32]]>
                 </placeholder>
+                <pattern>
+<![CDATA[|<img([^>]*?)src=([\'\"])(.*?)\2([^>]*?)>|i]]>
+                </pattern>
             </tlaziuk_lazyload>
         </advanced>
     </default>

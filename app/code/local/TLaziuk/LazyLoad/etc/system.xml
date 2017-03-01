@@ -12,7 +12,7 @@
                     <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
                     <fields>
-                        <enabled translate="label" module="tlaziuk_lazyload">
+                        <enabled translate="label">
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
@@ -21,7 +21,7 @@
                             <show_in_store>1</show_in_store>
                             <sort_order>0</sort_order>
                         </enabled>
-                        <placeholder translate="label comment" module="tlaziuk_lazyload">
+                        <placeholder translate="label comment">
                             <label>Placeholder</label>
                             <comment>Provide a URL to image which should be used as placeholder.</comment>
                             <frontend_type>text</frontend_type>
@@ -30,7 +30,7 @@
                             <show_in_store>1</show_in_store>
                             <sort_order>10</sort_order>
                         </placeholder>
-                        <all translate="label comment" module="tlaziuk_lazyload">
+                        <all translate="label comment">
                             <label>All</label>
                             <comment>Try to lazy-load everything.</comment>
                             <frontend_type>select</frontend_type>
@@ -40,7 +40,7 @@
                             <show_in_store>1</show_in_store>
                             <sort_order>100</sort_order>
                         </all>
-                        <module translate="label comment" module="tlaziuk_lazyload">
+                        <module translate="label comment">
                             <label>Modules</label>
                             <comment>Lazy-load only selected modules output.</comment>
                             <frontend_type>multiselect</frontend_type>
@@ -53,6 +53,18 @@
                             </depends>
                             <sort_order>200</sort_order>
                         </module>
+                        <block translate="label">
+                            <label>Blocks</label>
+                            <frontend_model>tlaziuk_lazyload/system_config_form_field_block</frontend_model>
+                            <backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <all>0</all>
+                            </depends>
+                            <sort_order>300</sort_order>
+                        </block>
                     </fields>
                 </tlaziuk_lazyload>
             </groups>

@@ -1,12 +1,7 @@
 <?php
-class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
+class TLaziuk_LazyLoad_Helper_Data
+    extends TLaziuk_LazyLoad_Helper_Abstract
 {
-    const XML_PATH_ALL = 'advanced/tlaziuk_lazyload/all';
-    const XML_PATH_ATTRIBUTE = 'advanced/tlaziuk_lazyload/attribute';
-    const XML_PATH_ENABLED = 'advanced/tlaziuk_lazyload/enabled';
-    const XML_PATH_MODULE = 'advanced/tlaziuk_lazyload/module';
-    const XML_PATH_PLACEHOLDER= 'advanced/tlaziuk_lazyload/placeholder';
-
     const CACHE_GROUP = Mage_Core_Block_Abstract::CACHE_GROUP;
     const CACHE_KEY_PREFIX = self::CACHE_TAG;
     const CACHE_LIFETIME = Mage_Core_Model_Cache::DEFAULT_LIFETIME;
@@ -26,74 +21,26 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
         return $this;
     }
 
-    protected $_attribute;
-
-    public function getAttribute() {
-        if (empty($this->_attribute)) {
-            $this->_attribute = Mage::getStoreConfig(self::XML_PATH_ATTRIBUTE);
-        }
-        return $this->_attribute;
+    /**
+     * check config conditions if block is lazy
+     *
+     * @param Mage_Core_Block_Abstract $block
+     *
+     * @return boolean
+     */
+    public function isBlockLazy(Mage_Core_Block_Abstract $block)
+    {
+        $blk = $this->getBlock();
+        return in_array($block->getNameInLayout(), $blk[TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_INCLUDE])
+            || (in_array($block->getModuleName(), $this->getModule()) && !in_array($block->getNameInLayout(), $blk[TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_EXCLUDE]));
     }
 
-    protected $_placeholder;
-
-    public function getPlaceholder() {
-        if (empty($this->_placeholder)) {
-            $this->setPlaceholder(Mage::getStoreConfig(self::XML_PATH_PLACEHOLDER));
-        }
-        return $this->_placeholder;
-    }
-
-    public function setPlaceholder($value) {
-        $this->_placeholder = (string) $value;
-        return $this;
-    }
-
-    protected $_pattern;
-
-    public function getPattern() {
-        if (empty($this->_pattern)) {
-            $this->setPattern('|<img([^>]*?)src=([\'\"])(.*?)\2([^>]*?)>|i');
-        }
-        return $this->_pattern;
-    }
-
-    public function setPattern($pattern) {
-        $this->_pattern = $pattern;
-        return $this;
-    }
-
-    protected $_callback;
-
-    public function getCallback() {
-        if (empty($this->_callback)) {
-            $this->setCallback(function ($matches) {
-                if (strpos($matches[0], $this->getAttribute()) === false) {
-                    return "<img{$matches[1]}{$this->getAttribute()}={$matches[2]}{$matches[3]}{$matches[2]} src={$matches[2]}{$this->getPlaceholder()}{$matches[2]}{$matches[4]}>";
-                }
-                return $matches[0];
-            });
-        }
-        return $this->_callback;
-    }
-
-    public function setCallback(callable $callback) {
-        $this->_callback = $callback;
-        return $this;
-    }
-
-    public function isEnabled() {
-        return Mage::getStoreConfigFlag(self::XML_PATH_ENABLED);
-    }
-
-    public function isAll() {
-        return Mage::getStoreConfigFlag(self::XML_PATH_ALL);
-    }
-
-    public function getModule() {
-        return explode(',', Mage::getStoreConfig(self::XML_PATH_MODULE));
-    }
-
+    /**
+     * @param string $html
+     * @param boolean $skipScript (optional)
+     *
+     * @return string
+     */
     public function lazyHtml($html, $skipScript = true) {
         Varien_Profiler::start('TLaziuk_LazyLoad::lazyHtml');
         try {
@@ -124,6 +71,12 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
     protected $_commentPattern = '|<!--(.*?)-->([\s\S]*?)<!--\1-->|i';
     protected $_tmpHtml = array();
 
+    /**
+     * @param Mage_Core_Block_Abstract $block
+     * @param Varien_Object $transport
+     *
+     * @return Mage_Core_Block_Abstract
+     */
     public function lazyBlock(Mage_Core_Block_Abstract $block, Varien_Object $transport) {
         try {
             $name = $block->getModuleName() . '::' . get_class($block) . '::' . ($block->getNameInLayout() ? $block->getNameInLayout() : 'anonymous');
@@ -138,7 +91,7 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
                     }
                     return '';
                 }, $html);
-                if (in_array($block->getModuleName(), $this->getModule())) {
+                if ($this->isBlockLazy($block)) {
                     $html = $this->lazyHtml($html);
                 }
                 $html = preg_replace_callback($this->_commentPattern, function($matches) {
@@ -162,6 +115,11 @@ class TLaziuk_LazyLoad_Helper_Data extends Mage_Core_Helper_Abstract
         return $block;
     }
 
+    /**
+     * @param Zend_Controller_Response_Abstract $response
+     *
+     * @return Zend_Controller_Response_Abstract
+     */
     public function lazyResponse(Zend_Controller_Response_Abstract $response) {
         Varien_Profiler::start('TLaziuk_LazyLoad::lazyResponse');
         foreach ($response->getBody(true) as $name => $html) {
