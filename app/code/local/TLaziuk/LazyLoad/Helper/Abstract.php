@@ -35,7 +35,11 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
     public function getPattern()
     {
         if (!is_string($this->_pattern)) {
-            $this->_pattern = Mage::getStoreConfig(self::XML_PATH_PATTERN);
+            $pattern = Mage::getStoreConfig(self::XML_PATH_PATTERN);
+            if (!$this->_isPatternValid($pattern)) {
+                $pattern = "|<img([^>]*?)src=([\'\"])(.*?)\2([^>]*?)>|i";
+            }
+            $this->_pattern = $pattern;
         }
         return $this->_pattern;
     }
@@ -47,8 +51,22 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
      */
     public function setPattern($pattern)
     {
-        $this->_pattern = $pattern;
+        if ($this->_isPatternValid($pattern)) {
+            $this->_pattern = $pattern;
+        } else {
+            throw new Exception("pattern '{$pattern}' not valid");
+        }
         return $this;
+    }
+
+    /**
+     * @param mixed $pattern
+     *
+     * @return bool
+     */
+    protected function _isPatternValid($pattern)
+    {
+        return !(empty($pattern) && preg_match($pattern, "") === false);
     }
 
     /** @var callable */
@@ -116,12 +134,15 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
         );
 
         try {
-            if (is_array($arr = Zend_Serializer::unserialize(Mage::getStoreConfig(self::XML_PATH_BLOCK)))) {
+            $block = Mage::getStoreConfig(self::XML_PATH_BLOCK);
+            if (!empty($block) && is_array($arr = Zend_Serializer::unserialize($block))) {
                 foreach ($arr as $row) {
-                    if ($row['type'] == TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_EXCLUDE) {
-                        $res[TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_EXCLUDE][] = $row['name'];
-                    } elseif ($row['type'] == TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_INCLUDE) {
-                        $res[TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_INCLUDE][] = $row['name'];
+                    if (isset($row['type'], $row['name'])) {
+                        if ($row['type'] == TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_EXCLUDE) {
+                            $res[TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_EXCLUDE][] = $row['name'];
+                        } elseif ($row['type'] == TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_INCLUDE) {
+                            $res[TLaziuk_LazyLoad_Model_System_Config_Source_Type::VAL_INCLUDE][] = $row['name'];
+                        }
                     }
                 }
             }
