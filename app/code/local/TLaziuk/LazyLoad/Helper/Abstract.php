@@ -15,7 +15,7 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
      */
     public function getAttribute()
     {
-        return  Mage::getStoreConfig(self::XML_PATH_ATTRIBUTE);
+        return trim(Mage::getStoreConfig(self::XML_PATH_ATTRIBUTE));
     }
 
     /**
@@ -23,7 +23,7 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
      */
     public function getPlaceholder()
     {
-        return Mage::getStoreConfig(self::XML_PATH_PLACEHOLDER);
+        return trim(Mage::getStoreConfig(self::XML_PATH_PLACEHOLDER));
     }
 
     /** @var string */
@@ -35,7 +35,7 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
     public function getPattern()
     {
         if (!is_string($this->_pattern)) {
-            $pattern = Mage::getStoreConfig(self::XML_PATH_PATTERN);
+            $pattern = trim(Mage::getStoreConfig(self::XML_PATH_PATTERN));
             if (!$this->_isPatternValid($pattern)) {
                 $pattern = "|<img([^>]*?)src=([\'\"])(.*?)\2([^>]*?)>|i";
             }
