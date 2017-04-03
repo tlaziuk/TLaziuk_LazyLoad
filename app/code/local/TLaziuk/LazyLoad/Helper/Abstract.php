@@ -2,6 +2,7 @@
 abstract class TLaziuk_LazyLoad_Helper_Abstract
     extends Mage_Core_Helper_Abstract
 {
+    const XML_PATH_ADDCSS = 'advanced/tlaziuk_lazyload/add_css';
     const XML_PATH_ALL = 'advanced/tlaziuk_lazyload/all';
     const XML_PATH_ATTRIBUTE = 'advanced/tlaziuk_lazyload/attribute';
     const XML_PATH_BLOCK = 'advanced/tlaziuk_lazyload/block';
@@ -110,6 +111,14 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
     /**
      * @return boolean
      */
+    public function hasAddCss()
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_ADDCSS);
+    }
+
+    /**
+     * @return boolean
+     */
     public function isAll()
     {
         return Mage::getStoreConfigFlag(self::XML_PATH_ALL);
@@ -162,9 +171,14 @@ abstract class TLaziuk_LazyLoad_Helper_Abstract
      */
     public function isModuleEnabled($moduleName = null)
     {
+        if (is_null($moduleName)) {
+            $moduleName = $this->_getModuleName();
+        }
+
         if ($moduleName === $this->_getModuleName()) {
             return $this->isEnabled() && parent::isModuleEnabled($moduleName);
         }
+
         return parent::isModuleEnabled($moduleName);
     }
 }

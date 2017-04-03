@@ -2,4 +2,3 @@ app/code/local/TLaziuk/LazyLoad/ app/code/local/TLaziuk/LazyLoad/
 app/design/frontend/base/default/layout/tlaziuk/lazyload.xml app/design/frontend/base/default/layout/tlaziuk/lazyload.xml
 app/etc/modules/TLaziuk_LazyLoad.xml app/etc/modules/TLaziuk_LazyLoad.xml
 js/tlaziuk/lazyload/ js/tlaziuk/lazyload/
-skin/frontend/base/default/css/tlaziuk/lazyload/ skin/frontend/base/default/css/tlaziuk/lazyload/

@@ -21,9 +21,19 @@
                             <show_in_store>1</show_in_store>
                             <sort_order>0</sort_order>
                         </enabled>
+                        <add_css translate="label comment">
+                            <label>Add CSS</label>
+                            <comment>Add optional Lazy Load styles.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>2</sort_order>
+                        </add_css>
                         <placeholder translate="label comment">
                             <label>Placeholder</label>
-                            <comment>Provide a URL to image which should be used as placeholder.</comment>
+                            <comment>Provide URL to image which should be used as placeholder.</comment>
                             <frontend_type>text</frontend_type>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>

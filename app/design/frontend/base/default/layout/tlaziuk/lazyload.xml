@@ -2,11 +2,20 @@
 <layout>
     <default>
         <reference name="head">
-            <action method="addJs" ifconfig="advanced/tlaziuk_lazyload/enabled">
+            <action method="addItem" ifconfig="advanced/tlaziuk_lazyload/enabled">
+                <type>js</type>
                 <script>tlaziuk/lazyload/lazyload.js</script>
             </action>
-            <action method="addJs" ifconfig="advanced/tlaziuk_lazyload/enabled">
+            <action method="addItem" ifconfig="advanced/tlaziuk_lazyload/enabled">
+                <type>js</type>
                 <script>tlaziuk/lazyload/index.js</script>
+            </action>
+            <action method="addItem" ifconfig="advanced/tlaziuk_lazyload/enabled">
+                <type>js_css</type>
+                <name>tlaziuk/lazyload/index.css</name>
+                <params>media="all"</params>
+                <if />
+                <cond helper="tlaziuk_lazyload/canAddHeadCss" />
             </action>
         </reference>
     </default>

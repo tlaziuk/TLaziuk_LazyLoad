@@ -7,14 +7,26 @@ class TLaziuk_LazyLoad_Helper_Data
     const CACHE_LIFETIME = Mage_Core_Model_Cache::DEFAULT_LIFETIME;
     const CACHE_TAG = 'TLaziuk_LazyLoad';
 
-    public function loadCache($key) {
+    /**
+     * check if module css can be added to layout
+     *
+     * @return boolean
+     */
+    public function canAddHeadCss()
+    {
+        return $this->hasAddCss();
+    }
+
+    public function loadCache($key)
+    {
         if (Mage::app()->useCache(self::CACHE_GROUP)) {
             return Mage::app()->loadCache($key);
         }
         return false;
     }
 
-    public function saveCache($data, $key, array $tags = array(self::CACHE_TAG), $lifetime = self::CACHE_LIFETIME) {
+    public function saveCache($data, $key, array $tags = array(self::CACHE_TAG), $lifetime = self::CACHE_LIFETIME)
+    {
         if (Mage::app()->useCache(self::CACHE_GROUP)) {
             Mage::app()->saveCache($data, $key, $tags, $lifetime);
         }
@@ -41,7 +53,8 @@ class TLaziuk_LazyLoad_Helper_Data
      *
      * @return string
      */
-    public function lazyHtml($html, $skipScript = true) {
+    public function lazyHtml($html, $skipScript = true)
+    {
         Varien_Profiler::start('TLaziuk_LazyLoad::lazyHtml');
         try {
             $tmp = array();
@@ -77,7 +90,8 @@ class TLaziuk_LazyLoad_Helper_Data
      *
      * @return Mage_Core_Block_Abstract
      */
-    public function lazyBlock(Mage_Core_Block_Abstract $block, Varien_Object $transport) {
+    public function lazyBlock(Mage_Core_Block_Abstract $block, Varien_Object $transport)
+    {
         try {
             $name = $block->getModuleName() . '::' . get_class($block) . '::' . ($block->getNameInLayout() ? $block->getNameInLayout() : 'anonymous');
             Varien_Profiler::start('TLaziuk_LazyLoad::lazyBlock::' . $name);
@@ -120,7 +134,8 @@ class TLaziuk_LazyLoad_Helper_Data
      *
      * @return Zend_Controller_Response_Abstract
      */
-    public function lazyResponse(Zend_Controller_Response_Abstract $response) {
+    public function lazyResponse(Zend_Controller_Response_Abstract $response)
+    {
         Varien_Profiler::start('TLaziuk_LazyLoad::lazyResponse');
         foreach ($response->getBody(true) as $name => $html) {
             Varien_Profiler::start('TLaziuk_LazyLoad::lazyResponse::'.$name);
@@ -136,4 +151,3 @@ class TLaziuk_LazyLoad_Helper_Data
         return $response;
     }
 }
-
