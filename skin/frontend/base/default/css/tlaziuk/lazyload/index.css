@@ -1,0 +1,11 @@
+img:not([src]) {
+    /* Prevents img without src to appear */
+    visibility: hidden;
+}
+
+@-moz-document url-prefix() {
+    img:-moz-loading {
+        /* Fixes Firefox anomaly */
+        visibility: hidden;
+    }
+}
